@@ -1,0 +1,96 @@
+name: CI — Téléchargeur Universel
+
+# Déclencheurs : à chaque push sur toutes les branches,
+# et à chaque Pull Request (synchronize + opened + reopened).
+on:
+  push:
+    branches:
+      - "**"
+  pull_request:
+    branches:
+      - "**"
+
+jobs:
+  quality:
+    name: Qualité du code (lint + tests)
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+
+    timeout-minutes: 20
+
+    steps:
+      # 1) Récupération du code source du dépôt
+      - name: Checkout du code
+        uses: actions/checkout@v4
+
+      # 2) Installation de la version de Python choisie
+      - name: Configuration Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      # 3) Préparation du cache pip pour accélérer les exécutions suivantes
+      - name: Cache des dépendances pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('requirements*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-${{ matrix.python-version }}-
+
+      # 4) Installation automatique des dépendances
+      - name: Installation des dépendances
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # 5) Vérification de la compilation (détection d'erreurs de syntaxe)
+      - name: Vérification de compilation (py_compile)
+        run: |
+          python -m py_compile app.py dl_engine.py downloader.py stream_dl.py
+          python -c "import ast,glob; [ast.parse(open(f).read()) for f in glob.glob('*.py')]"
+
+      # 6) Lint automatique (respect des bonnes pratiques PEP8)
+      #    Les exceptions (longueur de ligne, imports volontaires) sont
+      #    documentées dans le fichier .flake8 à la racine du projet.
+      - name: Lint avec flake8
+        run: |
+          flake8 app.py dl_engine.py downloader.py stream_dl.py \
+            --count \
+            --show-source \
+            --statistics
+
+      # 7) Tests automatiques unitaires (si tests disponibles)
+      - name: Exécution des tests (pytest)
+        run: |
+          pip install -r requirements-dev.txt
+          pytest -v --tb=short
+
+  # Build / "paquet" : vérifie que l'application peut être construite
+  build:
+    name: Build applicatif
+    runs-on: windows-latest
+    needs: quality
+
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v4
+
+      - name: Configuration Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Installation des dépendances
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Compilation du code
+        run: |
+          python -m py_compile app.py dl_engine.py downloader.py stream_dl.py
+          python -c "import app, dl_engine, downloader, stream_dl; print('Modules importables : OK')"

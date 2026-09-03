@@ -1,0 +1,46 @@
+# ---------- Python ----------
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+*.spec
+
+# ---------- Environnement virtuel ----------
+venv/
+.venv/
+env/
+ENV/
+
+# ---------- Fichiers téléchargés / médias (générés par l'app) ----------
+*.mp4
+*.mp3
+*.mkv
+*.avi
+*.mov
+*.webm
+*.wav
+*.flac
+*.m4a
+*.aac
+master.mp4
+
+# ---------- Données locales de l'application ----------
+.browser_profile/
+cookies.txt
+
+# ---------- Outils / cache ----------
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+node_modules/
+
+# ---------- Logs ----------
+*.log
+
+# ---------- Fichiers sensibles ----------
+.env
+.env.local

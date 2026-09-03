@@ -1,0 +1,19 @@
+# Configuration flake8 — conventions de style du projet "Téléchargeur Universel"
+#
+# Raisons des exceptions tolérées :
+#   - max-line-length = 160 : de longues chaînes littérales (URLs, User-Agent,
+#     options yt-dlp) ne peuvent pas être découpées sans nuire à la lisibilité.
+#   - E402 : imports situés après du code lors de l'initialisation de modules
+#     (ex. détection conditionnelle de dépendances). Toléré ponctuellement.
+#   - F401 : imports volontaires utilisés comme "détection de dépendance"
+#     (ex. `import playwright`) pour vérifier qu'une bibliothèque est installée.
+#
+[flake8]
+max-line-length = 160
+extend-ignore = E402,F401
+exclude =
+    .git,
+    __pycache__,
+    venv,
+    .venv,
+    tests

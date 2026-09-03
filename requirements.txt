@@ -1,0 +1,16 @@
+# Dépendances de l'application "Téléchargeur Universel"
+# Généré à partir des bibliothèques réellement utilisées par le code source.
+#
+# Recommandation : épingler les versions exactes (==) pour la reproductibilité.
+# Ici sont indiquées les versions minimales vérifiées dans l'environnement de dev.
+
+yt-dlp>=2026.8.19
+playwright>=1.62.0
+librosa>=1.0.0
+soundfile>=0.14.0
+numpy>=2.5.2
+imageio-ffmpeg>=0.6.0
+
+# ---------- Dépendances de développement ----------
+# Pour l'exécution des tests et le linting en CI
+-r requirements-dev.txt
